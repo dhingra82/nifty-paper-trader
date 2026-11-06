@@ -1,13 +1,13 @@
-"""Nifty paper-trading worker. Runs daily on GitHub Actions, writes docs/data.json.
+"""Nifty paper-trading worker v2. Runs daily on GitHub Actions, writes docs/data.json.
 Data connector: Yahoo Finance (free). To switch source later, replace load_data() only."""
 import json, os, datetime as dt
 import numpy as np, pandas as pd, yfinance as yf
 
 SYMBOL = "^NSEI"          # Nifty 50 index (proxy for NIFTYBEES / Nifty futures)
-CAPITAL = 100000          # Rs per day, no leverage
+CAPITAL = 100000          # Rs per trade, no leverage
 SLIPPAGE = 0.0002         # 0.02% per side
-GAP = 0.003               # 0.3% gap threshold
 OOS_YEARS = 2             # last 2 years = out-of-sample
+GAP = 0.003               # base gap threshold for the pattern table
 DOCS = os.path.join(os.path.dirname(__file__), "..", "docs")
 
 
@@ -21,8 +21,8 @@ def load_data():
     return df[df.Open > 0]
 
 
-# ---------- Zerodha intraday equity charges (verify current rates on zerodha.com/charges) ----------
-def charges(buy_val, sell_val):
+# ---------- Zerodha charges (verify current rates on zerodha.com/charges) ----------
+def charges(buy_val, sell_val):  # intraday equity
     brk = min(20, buy_val * 0.0003) + min(20, sell_val * 0.0003)
     stt = sell_val * 0.00025
     exch = (buy_val + sell_val) * 0.0000297
@@ -32,6 +32,14 @@ def charges(buy_val, sell_val):
     return brk + stt + exch + sebi + gst + stamp
 
 
+def delivery_side(v, buy):  # delivery: zero brokerage, STT 0.1% each side
+    exch = v * 0.0000297
+    sebi = v * 0.000001
+    gst = 0.18 * (exch + sebi)
+    stamp = v * 0.00015 if buy else 0
+    return v * 0.001 + exch + sebi + gst + stamp + SLIPPAGE * v
+
+
 # ---------- features ----------
 def prepare(df):
     d = df.copy()
@@ -39,6 +47,7 @@ def prepare(df):
     d["gap"] = d.Open / d.prev_close - 1
     d["overnight"] = d.gap
     d["intraday"] = d.Close / d.Open - 1
+    d["close_ret"] = d.Close / d.prev_close - 1
     ma50 = d.Close.rolling(50).mean().shift(1)
     ma200 = d.Close.rolling(200).mean().shift(1)
     slope = ma50.pct_change(20)
@@ -50,20 +59,21 @@ def prepare(df):
     return d.dropna(subset=["prev_close"])
 
 
-# ---------- strategies: return position in {-1,0,1}, decided at the open ----------
-def gap_fade(d):
-    return np.where(d.gap > GAP, -1, np.where(d.gap < -GAP, 1, 0))
+# ---------- strategies ----------
+def fade(th):
+    return lambda d: np.where(d.gap > th, -1, np.where(d.gap < -th, 1, 0))
 
-def gap_follow(d):
-    return -gap_fade(d)
+def follow(th):
+    return lambda d: -fade(th)(d)
 
 def trend_long(d):
     return np.where(d.above_ma50 & d.regime.eq("up"), 1, 0)
 
-STRATS = {"Gap fade": gap_fade, "Gap follow": gap_follow, "Trend-day long": trend_long}
+def swing_long(d):  # hold from one close to the next while trend is up
+    return np.where(d.above_ma50 & d.regime.eq("up"), 1, 0)
 
 
-def simulate(d, pos):
+def simulate_intraday(d, pos):
     r = d.intraday.values
     pos = np.asarray(pos)
     gross = pos * CAPITAL * r
@@ -71,13 +81,36 @@ def simulate(d, pos):
     for i, p in enumerate(pos):
         if p == 0:
             continue
-        entry = CAPITAL
         exit_ = CAPITAL * (1 + r[i] * p)
-        buy, sell = (entry, exit_) if p == 1 else (exit_, entry)
+        buy, sell = (CAPITAL, exit_) if p == 1 else (exit_, CAPITAL)
         cost[i] = charges(buy, sell) + 2 * SLIPPAGE * CAPITAL
-    out = pd.DataFrame({"gross": gross, "cost": cost, "net": gross - cost,
-                        "pos": pos, "regime": d.regime.values}, index=d.index)
-    return out
+    return pd.DataFrame({"gross": gross, "cost": cost, "net": gross - cost,
+                         "pos": pos, "regime": d.regime.values}, index=d.index)
+
+
+def simulate_swing(d, pos):
+    pos = np.asarray(pos)
+    gross = pos * CAPITAL * d.close_ret.values
+    cost = np.zeros(len(d))
+    for i, p in enumerate(pos):
+        if p == 0:
+            continue
+        if i == 0 or pos[i - 1] == 0:
+            cost[i] += delivery_side(CAPITAL, True)
+        if i == len(pos) - 1 or pos[i + 1] == 0:
+            cost[i] += delivery_side(CAPITAL, False)
+    return pd.DataFrame({"gross": gross, "cost": cost, "net": gross - cost,
+                         "pos": pos, "regime": d.regime.values}, index=d.index)
+
+
+STRATS = {
+    "Gap fade (>0.3%)": (fade(0.003), simulate_intraday),
+    "Gap fade (>0.7%)": (fade(0.007), simulate_intraday),
+    "Gap fade (>1.0%)": (fade(0.010), simulate_intraday),
+    "Gap follow (>0.3%)": (follow(0.003), simulate_intraday),
+    "Trend-day long": (trend_long, simulate_intraday),
+    "Swing long (trend) - 'Trades' = days held": (swing_long, simulate_swing),
+}
 
 
 def stats(x):
@@ -103,7 +136,8 @@ def pattern_block(d):
         return dict(label=label, n=int(len(s)), mean_pct=round(float(s.mean() * 100), 4),
                     t=round(tstat(s), 2), up_pct=round(float((s > 0).mean() * 100), 1))
     rows = [row("Overnight (prev close to open)", d.overnight), row("Intraday (open to close)", d.intraday)]
-    for lab, m in [("Gap up > 0.3%", d.gap > GAP), ("Gap down < -0.3%", d.gap < -GAP)]:
+    for lab, m in [("Gap up > 0.3%", d.gap > GAP), ("Gap down < -0.3%", d.gap < -GAP),
+                   ("Gap up > 1.0%", d.gap > 0.01), ("Gap down < -1.0%", d.gap < -0.01)]:
         rows.append(row(f"Intraday after {lab}", d.intraday[m]))
     for reg in ["up", "down", "sideways"]:
         rows.append(row(f"Intraday in {reg} regime", d.intraday[d.regime == reg]))
@@ -125,14 +159,16 @@ def main():
     split = d.index[-1] - pd.DateOffset(years=OOS_YEARS)
 
     res = {}
-    for name, fn in STRATS.items():
-        sim = simulate(d, fn(d))
+    for name, (fn, simfn) in STRATS.items():
+        sim = simfn(d, fn(d))
         ins, oos = sim[sim.index <= split], sim[sim.index > split]
         paper = sim[sim.index >= pd.Timestamp(start)]
         by_reg = {r: stats(sim[sim.regime == r]) for r in ["up", "down", "sideways"]}
         o = stats(oos)
-        verdict = "possible edge (keep paper trading)" if (o["avg_pct"] > 0 and o["tstat"] > 2) \
-            else "no reliable edge after costs"
+        ok = o["avg_pct"] > 0 and o["tstat"] > 2 and o["trades"] >= 30
+        verdict = "possible edge (keep paper trading)" if ok else "no reliable edge after costs"
+        if o["trades"] < 30:
+            verdict += " (too few out-of-sample trades to judge)"
         cum = sim.net.cumsum().iloc[-500:]
         res[name] = dict(all=stats(sim), in_sample=stats(ins), out_of_sample=o, by_regime=by_reg,
                          paper=stats(paper), verdict=verdict,
