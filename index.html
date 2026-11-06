@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nifty Paper Trader</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f5f5f2;--line:#ddd;--pos:#0a7a3d;--neg:#b3261e;--acc:#2456c9}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#eee;--mut:#9a9a9a;--card:#222;--line:#383838;--pos:#4cc17f;--neg:#f2736b;--acc:#7aa2ff}}
+body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:auto}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px}
+.mut{color:var(--mut);font-size:13px}.card{background:var(--card);border-radius:10px;padding:12px;margin:10px 0}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}.pos{color:var(--pos)}.neg{color:var(--neg)}
+select{padding:6px;font-size:14px}svg{width:100%;height:180px}
+</style></head><body>
+<h1>Nifty Paper Trader</h1>
+<div class="mut" id="meta">Loading…</div>
+<div class="card mut">Paper trading only. Costs use Zerodha intraday rates plus slippage. Past results do not predict future returns. Not financial advice.</div>
+<label>Strategy: <select id="sel"></select></label>
+<div class="card"><b id="verdict"></b><div class="mut" id="vsub"></div></div>
+<h2>Cumulative net P&amp;L (Rs, after all charges)</h2><div class="card"><svg id="chart" viewBox="0 0 600 180" preserveAspectRatio="none"></svg></div>
+<h2>Performance summary</h2><div class="wrap"><table id="sum"></table></div>
+<h2>Pattern analysis (overnight vs intraday)</h2>
+<div class="mut">|t| above about 2 suggests a pattern may be real; most are noise, so treat it with caution.</div>
+<div class="wrap"><table id="pat"></table></div>
+<h2>Paper trades (latest 60)</h2><div class="wrap"><table id="tr"></table></div>
+<script>
+const f=(n)=>Number(n).toLocaleString('en-IN');
+const c=(n)=>n>0?'pos':n<0?'neg':'';
+let D;
+fetch('data.json?'+Date.now()).then(r=>r.json()).then(d=>{D=d;
+ document.getElementById('meta').textContent=`${d.symbol} · Rs ${f(d.capital)} per day · paper start ${d.paper_start} · data to ${d.last_data_date} · regime now: ${d.current_regime} · updated ${d.updated}`;
+ const s=document.getElementById('sel');Object.keys(d.strategies).forEach(k=>s.add(new Option(k,k)));
+ s.onchange=draw;draw();pat();}).catch(e=>{document.getElementById('meta').textContent='No data yet. Run the GitHub Action once (see README).'});
+function row(name,x){return `<tr><td>${name}</td><td>${x.trades}</td><td class="${c(x.net)}">${f(x.net)}</td><td class="${c(x.avg_pct)}">${x.avg_pct}%</td><td>${x.win}%</td><td>${f(x.costs)}</td><td>${x.tstat}</td><td>${f(x.maxdd)}</td></tr>`}
+function draw(){const s=D.strategies[document.getElementById('sel').value];
+ document.getElementById('verdict').textContent='Verdict: '+s.verdict;
+ document.getElementById('vsub').textContent=`Judged on out-of-sample data from ${D.oos_from} (never used for design).`;
+ let h='<tr><th>Slice</th><th>Trades</th><th>Net Rs</th><th>Avg/trade</th><th>Win</th><th>Costs Rs</th><th>t-stat</th><th>Max DD Rs</th></tr>';
+ h+=row('All history',s.all)+row('In-sample',s.in_sample)+row('Out-of-sample',s.out_of_sample)+row('Live paper',s.paper);
+ for(const r of ['up','down','sideways'])h+=row('Regime: '+r,s.by_regime[r]);
+ document.getElementById('sum').innerHTML=h;
+ const e=s.equity.map(p=>p[1]);if(e.length){const mn=Math.min(...e),mx=Math.max(...e),rg=(mx-mn)||1;
+  const pts=e.map((v,i)=>`${i/(e.length-1||1)*600},${170-(v-mn)/rg*160}`).join(' ');
+  document.getElementById('chart').innerHTML=`<polyline fill="none" stroke="var(--acc)" stroke-width="2" points="${pts}"/><text x="4" y="12" fill="var(--mut)" font-size="11">${f(mx)}</text><text x="4" y="176" fill="var(--mut)" font-size="11">${f(mn)}</text>`}
+ let t='<tr><th>Date</th><th>Side</th><th>Gross</th><th>Costs</th><th>Net</th></tr>';
+ t+=s.paper_trades.length?s.paper_trades.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${x.pos>0?'Long':'Short'}</td><td class="${c(x.gross)}">${f(x.gross)}</td><td>${f(x.cost)}</td><td class="${c(x.net)}">${f(x.net)}</td></tr>`).join(''):'<tr><td colspan="5">No paper trades yet. They appear as new trading days pass.</td></tr>';
+ document.getElementById('tr').innerHTML=t}
+function pat(){let h='<tr><th>Pattern</th><th>Days</th><th>Mean %</th><th>t-stat</th><th>% days up</th></tr>';
+ D.patterns.forEach(p=>h+=`<tr><td>${p.label}</td><td>${p.n}</td><td class="${c(p.mean_pct)}">${p.mean_pct}</td><td>${p.t}</td><td>${p.up_pct}</td></tr>`);
+ document.getElementById('pat').innerHTML=h}
+</script></body></html>
