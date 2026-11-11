@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-10 18:44 UTC",
+ "updated": "2026-11-11 18:48 UTC",
  "symbol": "^NSEI",
  "capital": 100000,
  "paper_start": "2026-11-06",
@@ -9,16 +9,16 @@
  "patterns": [
   {
    "label": "Overnight (prev close to open)",
-   "n": 2755,
-   "mean_pct": 0.1075,
+   "n": 2754,
+   "mean_pct": 0.1076,
    "t": 8.8,
    "up_pct": 66.5
   },
   {
    "label": "Intraday (open to close)",
-   "n": 2755,
-   "mean_pct": -0.0606,
-   "t": -3.85,
+   "n": 2754,
+   "mean_pct": -0.0604,
+   "t": -3.84,
    "up_pct": 46.9
   },
   {
@@ -65,17 +65,17 @@
   },
   {
    "label": "Intraday in sideways regime",
-   "n": 735,
-   "mean_pct": -0.0571,
-   "t": -1.72,
-   "up_pct": 46.9
+   "n": 734,
+   "mean_pct": -0.0566,
+   "t": -1.7,
+   "up_pct": 47.0
   },
   {
    "label": "Intraday on Mon",
-   "n": 550,
-   "mean_pct": -0.0817,
-   "t": -2.27,
-   "up_pct": 49.6
+   "n": 549,
+   "mean_pct": -0.081,
+   "t": -2.25,
+   "up_pct": 49.7
   },
   {
    "label": "Intraday on Tue",
