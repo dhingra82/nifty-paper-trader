@@ -1,31 +1,31 @@
 {
- "updated": "2026-11-25 20:33 UTC",
+ "updated": "2026-11-26 20:21 UTC",
  "symbol": "^NSEI",
  "capital": 100000,
  "paper_start": "2026-11-06",
- "last_data_date": "2026-11-23",
- "oos_from": "2024-11-23",
+ "last_data_date": "2026-11-25",
+ "oos_from": "2024-11-25",
  "current_regime": "sideways",
  "patterns": [
   {
    "label": "Overnight (prev close to open)",
    "n": 2753,
-   "mean_pct": 0.1068,
-   "t": 8.74,
+   "mean_pct": 0.1072,
+   "t": 8.78,
    "up_pct": 66.4
   },
   {
    "label": "Intraday (open to close)",
    "n": 2753,
-   "mean_pct": -0.0587,
-   "t": -3.74,
+   "mean_pct": -0.0583,
+   "t": -3.71,
    "up_pct": 47.0
   },
   {
    "label": "Intraday after Gap up > 0.3%",
-   "n": 865,
-   "mean_pct": -0.07,
-   "t": -2.39,
+   "n": 866,
+   "mean_pct": -0.0692,
+   "t": -2.37,
    "up_pct": 48.8
   },
   {
@@ -37,10 +37,10 @@
   },
   {
    "label": "Intraday after Gap up > 1.0%",
-   "n": 94,
-   "mean_pct": -0.2178,
-   "t": -1.5,
-   "up_pct": 46.8
+   "n": 95,
+   "mean_pct": -0.2089,
+   "t": -1.45,
+   "up_pct": 47.4
   },
   {
    "label": "Intraday after Gap down < -1.0%",
@@ -58,17 +58,17 @@
   },
   {
    "label": "Intraday in down regime",
-   "n": 528,
-   "mean_pct": 0.0024,
-   "t": 0.05,
-   "up_pct": 48.9
+   "n": 527,
+   "mean_pct": 0.0034,
+   "t": 0.07,
+   "up_pct": 49.0
   },
   {
    "label": "Intraday in sideways regime",
-   "n": 732,
-   "mean_pct": -0.0561,
-   "t": -1.68,
-   "up_pct": 47.0
+   "n": 733,
+   "mean_pct": -0.0551,
+   "t": -1.65,
+   "up_pct": 47.1
   },
   {
    "label": "Intraday on Mon",
@@ -79,17 +79,17 @@
   },
   {
    "label": "Intraday on Tue",
-   "n": 552,
-   "mean_pct": -0.0663,
-   "t": -1.98,
-   "up_pct": 43.8
+   "n": 551,
+   "mean_pct": -0.0655,
+   "t": -1.95,
+   "up_pct": 43.9
   },
   {
    "label": "Intraday on Wed",
-   "n": 555,
-   "mean_pct": -0.0427,
-   "t": -1.19,
-   "up_pct": 46.7
+   "n": 556,
+   "mean_pct": -0.0414,
+   "t": -1.16,
+   "up_pct": 46.8
   },
   {
    "label": "Intraday on Thu",
@@ -109,30 +109,30 @@
  "strategies": {
   "Gap fade (>0.3%)": {
    "all": {
-    "trades": 1252,
-    "net": -76305.0,
-    "avg_pct": -0.0609,
+    "trades": 1253,
+    "net": -77054.0,
+    "avg_pct": -0.0615,
     "win": 43.3,
-    "costs": 153310.0,
-    "tstat": -2.24,
+    "costs": 153433.0,
+    "tstat": -2.26,
     "maxdd": -87727.0
    },
    "in_sample": {
-    "trades": 1071,
-    "net": -60657.0,
+    "trades": 1072,
+    "net": -60649.0,
     "avg_pct": -0.0566,
-    "win": 43.2,
-    "costs": 131146.0,
+    "win": 43.3,
+    "costs": 131269.0,
     "tstat": -1.85,
     "maxdd": -71504.0
    },
    "out_of_sample": {
     "trades": 181,
-    "net": -15648.0,
-    "avg_pct": -0.0865,
-    "win": 43.6,
+    "net": -16405.0,
+    "avg_pct": -0.0906,
+    "win": 43.1,
     "costs": 22164.0,
-    "tstat": -1.65,
+    "tstat": -1.72,
     "maxdd": -19839.0
    },
    "by_regime": {
@@ -155,30 +155,26 @@
      "maxdd": -31810.0
     },
     "sideways": {
-     "trades": 350,
-     "net": -9354.0,
-     "avg_pct": -0.0267,
-     "win": 44.9,
-     "costs": 42860.0,
-     "tstat": -0.46,
+     "trades": 351,
+     "net": -10103.0,
+     "avg_pct": -0.0288,
+     "win": 44.7,
+     "costs": 42983.0,
+     "tstat": -0.49,
      "maxdd": -20025.0
     }
    },
    "paper": {
-    "trades": 4,
-    "net": 3516.0,
-    "avg_pct": 0.8791,
-    "win": 75.0,
-    "costs": 490.0,
-    "tstat": 1.51,
-    "maxdd": -382.0
+    "trades": 5,
+    "net": 2767.0,
+    "avg_pct": 0.5534,
+    "win": 60.0,
+    "costs": 613.0,
+    "tstat": 1.0,
+    "maxdd": -749.0
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     -61101.0
-    ],
     [
      "2024-11-14",
      -61101.0
@@ -2174,6 +2170,10 @@
     [
      "2026-11-23",
      -76305.0
+    ],
+    [
+     "2026-11-25",
+     -77054.0
     ]
    ],
    "paper_trades": [
@@ -2204,36 +2204,43 @@
      "gross": 2235.0,
      "cost": 123.0,
      "net": 2112.0
+    },
+    {
+     "date": "2026-11-25",
+     "pos": -1,
+     "gross": -627.0,
+     "cost": 122.0,
+     "net": -749.0
     }
    ]
   },
   "Gap fade (>0.7%)": {
    "all": {
-    "trades": 394,
-    "net": -8645.0,
-    "avg_pct": -0.0219,
-    "win": 42.9,
-    "costs": 48251.0,
-    "tstat": -0.33,
+    "trades": 395,
+    "net": -9394.0,
+    "avg_pct": -0.0238,
+    "win": 42.8,
+    "costs": 48373.0,
+    "tstat": -0.36,
     "maxdd": -32562.0
    },
    "in_sample": {
-    "trades": 333,
-    "net": -6667.0,
-    "avg_pct": -0.02,
-    "win": 41.4,
-    "costs": 40780.0,
+    "trades": 334,
+    "net": -6659.0,
+    "avg_pct": -0.0199,
+    "win": 41.6,
+    "costs": 40903.0,
     "tstat": -0.26,
     "maxdd": -29193.0
    },
    "out_of_sample": {
     "trades": 61,
-    "net": -1978.0,
-    "avg_pct": -0.0324,
-    "win": 50.8,
+    "net": -2735.0,
+    "avg_pct": -0.0448,
+    "win": 49.2,
     "costs": 7470.0,
-    "tstat": -0.31,
-    "maxdd": -6192.0
+    "tstat": -0.43,
+    "maxdd": -6737.0
    },
    "by_regime": {
     "up": {
@@ -2255,30 +2262,26 @@
      "maxdd": -12763.0
     },
     "sideways": {
-     "trades": 124,
-     "net": 14143.0,
-     "avg_pct": 0.1141,
-     "win": 46.8,
-     "costs": 15188.0,
-     "tstat": 0.82,
+     "trades": 125,
+     "net": 13394.0,
+     "avg_pct": 0.1071,
+     "win": 46.4,
+     "costs": 15310.0,
+     "tstat": 0.77,
      "maxdd": -8310.0
     }
    },
    "paper": {
-    "trades": 1,
-    "net": 204.0,
-    "avg_pct": 0.2041,
-    "win": 100.0,
-    "costs": 122.0,
+    "trades": 2,
+    "net": -545.0,
+    "avg_pct": -0.2727,
+    "win": 50.0,
+    "costs": 245.0,
     "tstat": 0.0,
-    "maxdd": 0.0
+    "maxdd": -749.0
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     -6667.0
-    ],
     [
      "2024-11-14",
      -6667.0
@@ -4274,6 +4277,10 @@
     [
      "2026-11-23",
      -8645.0
+    ],
+    [
+     "2026-11-25",
+     -9394.0
     ]
    ],
    "paper_trades": [
@@ -4283,35 +4290,42 @@
      "gross": 327.0,
      "cost": 122.0,
      "net": 204.0
+    },
+    {
+     "date": "2026-11-25",
+     "pos": -1,
+     "gross": -627.0,
+     "cost": 122.0,
+     "net": -749.0
     }
    ]
   },
   "Gap fade (>1.0%)": {
    "all": {
-    "trades": 177,
-    "net": 10743.0,
-    "avg_pct": 0.0607,
-    "win": 50.3,
-    "costs": 21678.0,
-    "tstat": 0.5,
+    "trades": 178,
+    "net": 9994.0,
+    "avg_pct": 0.0561,
+    "win": 50.0,
+    "costs": 21800.0,
+    "tstat": 0.46,
     "maxdd": -17229.0
    },
    "in_sample": {
-    "trades": 145,
-    "net": 9023.0,
-    "avg_pct": 0.0622,
-    "win": 48.3,
-    "costs": 17758.0,
+    "trades": 146,
+    "net": 9032.0,
+    "avg_pct": 0.0619,
+    "win": 48.6,
+    "costs": 17880.0,
     "tstat": 0.43,
     "maxdd": -15373.0
    },
    "out_of_sample": {
     "trades": 32,
-    "net": 1720.0,
-    "avg_pct": 0.0537,
-    "win": 59.4,
+    "net": 962.0,
+    "avg_pct": 0.0301,
+    "win": 56.2,
     "costs": 3920.0,
-    "tstat": 0.32,
+    "tstat": 0.18,
     "maxdd": -3857.0
    },
    "by_regime": {
@@ -4334,30 +4348,26 @@
      "maxdd": -11566.0
     },
     "sideways": {
-     "trades": 52,
-     "net": 16255.0,
-     "avg_pct": 0.3126,
-     "win": 59.6,
-     "costs": 6371.0,
-     "tstat": 1.05,
+     "trades": 53,
+     "net": 15506.0,
+     "avg_pct": 0.2926,
+     "win": 58.5,
+     "costs": 6493.0,
+     "tstat": 1.0,
      "maxdd": -6358.0
     }
    },
    "paper": {
-    "trades": 1,
-    "net": 204.0,
-    "avg_pct": 0.2041,
-    "win": 100.0,
-    "costs": 122.0,
+    "trades": 2,
+    "net": -545.0,
+    "avg_pct": -0.2727,
+    "win": 50.0,
+    "costs": 245.0,
     "tstat": 0.0,
-    "maxdd": 0.0
+    "maxdd": -749.0
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     9023.0
-    ],
     [
      "2024-11-14",
      9023.0
@@ -6353,6 +6363,10 @@
     [
      "2026-11-23",
      10743.0
+    ],
+    [
+     "2026-11-25",
+     9994.0
     ]
    ],
    "paper_trades": [
@@ -6362,35 +6376,42 @@
      "gross": 327.0,
      "cost": 122.0,
      "net": 204.0
+    },
+    {
+     "date": "2026-11-25",
+     "pos": -1,
+     "gross": -627.0,
+     "cost": 122.0,
+     "net": -749.0
     }
    ]
   },
   "Gap follow (>0.3%)": {
    "all": {
-    "trades": 1252,
-    "net": -230289.0,
-    "avg_pct": -0.1839,
+    "trades": 1253,
+    "net": -229784.0,
+    "avg_pct": -0.1834,
     "win": 41.7,
-    "costs": 153283.0,
-    "tstat": -6.75,
+    "costs": 153406.0,
+    "tstat": -6.73,
     "maxdd": -230381.0
    },
    "in_sample": {
-    "trades": 1071,
-    "net": -201610.0,
-    "avg_pct": -0.1882,
+    "trades": 1072,
+    "net": -201863.0,
+    "avg_pct": -0.1883,
     "win": 41.7,
-    "costs": 131121.0,
-    "tstat": -6.15,
-    "maxdd": -201703.0
+    "costs": 131244.0,
+    "tstat": -6.16,
+    "maxdd": -201956.0
    },
    "out_of_sample": {
     "trades": 181,
-    "net": -28678.0,
-    "avg_pct": -0.1584,
-    "win": 41.4,
+    "net": -27921.0,
+    "avg_pct": -0.1543,
+    "win": 42.0,
     "costs": 22162.0,
-    "tstat": -3.02,
+    "tstat": -2.93,
     "maxdd": -28827.0
    },
    "by_regime": {
@@ -6413,30 +6434,26 @@
      "maxdd": -49646.0
     },
     "sideways": {
-     "trades": 350,
-     "net": -76355.0,
-     "avg_pct": -0.2182,
-     "win": 37.1,
-     "costs": 42848.0,
-     "tstat": -3.74,
+     "trades": 351,
+     "net": -75850.0,
+     "avg_pct": -0.2161,
+     "win": 37.3,
+     "costs": 42971.0,
+     "tstat": -3.71,
      "maxdd": -77152.0
     }
    },
    "paper": {
-    "trades": 4,
-    "net": -4496.0,
-    "avg_pct": -1.1239,
-    "win": 25.0,
-    "costs": 489.0,
-    "tstat": -1.93,
+    "trades": 5,
+    "net": -3991.0,
+    "avg_pct": -0.7983,
+    "win": 40.0,
+    "costs": 612.0,
+    "tstat": -1.44,
     "maxdd": -4496.0
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     -200677.0
-    ],
     [
      "2024-11-14",
      -200677.0
@@ -8432,6 +8449,10 @@
     [
      "2026-11-23",
      -230289.0
+    ],
+    [
+     "2026-11-25",
+     -229784.0
     ]
    ],
    "paper_trades": [
@@ -8462,6 +8483,13 @@
      "gross": -2235.0,
      "cost": 122.0,
      "net": -2357.0
+    },
+    {
+     "date": "2026-11-25",
+     "pos": 1,
+     "gross": 627.0,
+     "cost": 123.0,
+     "net": 504.0
     }
    ]
   },
@@ -8533,10 +8561,6 @@
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     -229247.0
-    ],
     [
      "2024-11-14",
      -229247.0
@@ -10532,6 +10556,10 @@
     [
      "2026-11-23",
      -242076.0
+    ],
+    [
+     "2026-11-25",
+     -242076.0
     ]
    ],
    "paper_trades": []
@@ -10604,10 +10632,6 @@
    },
    "verdict": "no reliable edge after costs",
    "equity": [
-    [
-     "2024-11-13",
-     44011.0
-    ],
     [
      "2024-11-14",
      44011.0
@@ -12602,6 +12626,10 @@
     ],
     [
      "2026-11-23",
+     44023.0
+    ],
+    [
+     "2026-11-25",
      44023.0
     ]
    ],
